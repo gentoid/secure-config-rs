@@ -4,3 +4,4 @@ version = "0.1.0"
 authors = ["Viktor Lazarev <taurus101v@gmail.com>"]
 
 [dependencies]
+base64 = "0.9.0"
