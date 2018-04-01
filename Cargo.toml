@@ -6,3 +6,4 @@ authors = ["Viktor Lazarev <taurus101v@gmail.com>"]
 [dependencies]
 base64 = "0.9.0"
 openssl = "0.10.5"
+rust-crypto = "0.2.36"
