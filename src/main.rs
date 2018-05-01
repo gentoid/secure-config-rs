@@ -1,3 +1,4 @@
+extern crate base64;
 extern crate openssl;
 extern crate rand;
 
@@ -23,9 +24,15 @@ fn main() {
 
     println!("used IV {:?}", iv);
 
-    let ciphertext = encrypt(cipher, key, Some(iv.as_bytes()), a);
+    let ciphertext = encrypt(cipher, key, Some(iv.as_bytes()), a).unwrap();
 
-    let decrypted = decrypt(cipher, key, Some(iv.as_bytes()), &ciphertext.unwrap());
+    let encoded = base64::encode(&ciphertext);
+    let decoded = base64::decode(&encoded).unwrap();
+
+    println!("ENC({})::IV({})", encoded, iv);
+    println!("{:?}", decoded);
+
+    let decrypted = decrypt(cipher, key, Some(iv.as_bytes()), &decoded);
 
     // println!("{:?}", ciphertext);
     println!("decrypted {:?}", str::from_utf8(&decrypted.unwrap()).unwrap());
