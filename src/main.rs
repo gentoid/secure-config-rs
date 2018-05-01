@@ -1,16 +1,9 @@
 extern crate secure_config;
 
-extern crate base64;
 extern crate clap;
-extern crate openssl;
-extern crate rand;
 
-use std::env;
-// use std::str;
 use clap::{Arg, App, SubCommand};
-use secure_config::{encode, Encode};
-// use openssl::symm::{encrypt, Cipher, decrypt};
-// use rand::Rng;
+use secure_config::{encode, Encode, get_key, decode, Decode};
 
 fn main() {
     let matches = App::new("Something encoding/decoding")
@@ -28,26 +21,15 @@ fn main() {
                         .help("A string to be decoded. It should be in the format of 'ENC(...)::IV(...)', otherwise it won't be decoded")))
         .get_matches();
 
-    let key = env::var("SECURE_CONFIG_KEY").unwrap();
-
     if let Some(sumbcommand) = matches.subcommand_matches("encode") {
+        let key = get_key().unwrap();
         let string_to_encode = sumbcommand.value_of("string").unwrap();
         println!("{:?}", encode(Encode { key: key, string: string_to_encode.to_string() }).unwrap());
     }
 
-
-    // let string_to_decode = matches.subcommand_matches("decode").unwrap().value_of("string").unwrap();
-
-
-    // let cipher = Cipher::aes_256_cfb1();
-
-
-
-    // let decoded = base64::decode(&encoded).unwrap();
-
-    // println!("{:?}", decoded);
-
-    // let decrypted = decrypt(cipher, key, Some(iv.as_bytes()), &decoded);
-
-    // println!("decrypted {:?}", str::from_utf8(&decrypted.unwrap()).unwrap());
+    if let Some(sumbcommand) = matches.subcommand_matches("decode") {
+        let key = get_key().unwrap();
+        let string_to_encode = sumbcommand.value_of("string").unwrap();
+        println!("{:?}", decode(Decode { key: key, string: string_to_encode.to_string() }).unwrap());
+    }
 }
