@@ -29,7 +29,7 @@ fn main() {
     let encoded = base64::encode(&ciphertext);
     let decoded = base64::decode(&encoded).unwrap();
 
-    println!("ENC({})::IV({})", encoded, iv);
+    println!("ENC({})::IV({})", encoded, base64::encode(&iv));
     println!("{:?}", decoded);
 
     let decrypted = decrypt(cipher, key, Some(iv.as_bytes()), &decoded);
