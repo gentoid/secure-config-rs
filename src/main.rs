@@ -1,8 +1,9 @@
 extern crate openssl;
 extern crate rand;
 
-use openssl::symm::{encrypt, Cipher};
+use openssl::symm::{encrypt, Cipher, decrypt};
 use rand::Rng;
+use std::str;
 
 fn main() {
     let a = b"hello world";
@@ -24,5 +25,8 @@ fn main() {
 
     let ciphertext = encrypt(cipher, key, Some(iv.as_bytes()), a);
 
-    println!("{:?}", ciphertext);
+    let decrypted = decrypt(cipher, key, Some(iv.as_bytes()), &ciphertext.unwrap());
+
+    // println!("{:?}", ciphertext);
+    println!("decrypted {:?}", str::from_utf8(&decrypted.unwrap()).unwrap());
 }
