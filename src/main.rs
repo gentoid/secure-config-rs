@@ -3,10 +3,11 @@ extern crate clap;
 extern crate openssl;
 extern crate rand;
 
+use std::env;
+use std::str;
 use clap::{Arg, App, SubCommand};
 use openssl::symm::{encrypt, Cipher, decrypt};
 use rand::Rng;
-use std::str;
 
 fn main() {
     let matches = App::new("Something encoding/decoding")
@@ -27,7 +28,8 @@ fn main() {
     let string_to_encode = matches.subcommand_matches("encode").unwrap().value_of("string").unwrap();
     let string_to_decode = matches.subcommand_matches("decode").unwrap().value_of("string").unwrap();
 
-    let key = b"000102030405060708090a0b0c0d0e0f";
+    let key = env::var("SECURE_CONFIG_KEY").unwrap();
+    let key = key.as_bytes();
 
     let cipher = Cipher::aes_256_cfb1();
 
