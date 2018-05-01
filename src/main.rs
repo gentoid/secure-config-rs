@@ -1,13 +1,16 @@
+extern crate secure_config;
+
 extern crate base64;
 extern crate clap;
 extern crate openssl;
 extern crate rand;
 
 use std::env;
-use std::str;
+// use std::str;
 use clap::{Arg, App, SubCommand};
-use openssl::symm::{encrypt, Cipher, decrypt};
-use rand::Rng;
+use secure_config::{encode, Encode};
+// use openssl::symm::{encrypt, Cipher, decrypt};
+// use rand::Rng;
 
 fn main() {
     let matches = App::new("Something encoding/decoding")
@@ -25,28 +28,26 @@ fn main() {
                         .help("A string to be decoded. It should be in the format of 'ENC(...)::IV(...)', otherwise it won't be decoded")))
         .get_matches();
 
-    let string_to_encode = matches.subcommand_matches("encode").unwrap().value_of("string").unwrap();
-    let string_to_decode = matches.subcommand_matches("decode").unwrap().value_of("string").unwrap();
-
     let key = env::var("SECURE_CONFIG_KEY").unwrap();
-    let key = key.as_bytes();
 
-    let cipher = Cipher::aes_256_cfb1();
-
-    let mut iv = String::new();
-    for c in rand::thread_rng().gen_ascii_chars().take(16) {
-        iv.push(c);
+    if let Some(sumbcommand) = matches.subcommand_matches("encode") {
+        let string_to_encode = sumbcommand.value_of("string").unwrap();
+        println!("{:?}", encode(Encode { key: key, string: string_to_encode.to_string() }).unwrap());
     }
 
-    let ciphertext = encrypt(cipher, key, Some(iv.as_bytes()), string_to_encode.as_bytes()).unwrap();
 
-    let encoded = base64::encode(&ciphertext);
-    let decoded = base64::decode(&encoded).unwrap();
+    // let string_to_decode = matches.subcommand_matches("decode").unwrap().value_of("string").unwrap();
 
-    println!("ENC({})::IV({})", encoded, base64::encode(&iv));
-    println!("{:?}", decoded);
 
-    let decrypted = decrypt(cipher, key, Some(iv.as_bytes()), &decoded);
+    // let cipher = Cipher::aes_256_cfb1();
 
-    println!("decrypted {:?}", str::from_utf8(&decrypted.unwrap()).unwrap());
+
+
+    // let decoded = base64::decode(&encoded).unwrap();
+
+    // println!("{:?}", decoded);
+
+    // let decrypted = decrypt(cipher, key, Some(iv.as_bytes()), &decoded);
+
+    // println!("decrypted {:?}", str::from_utf8(&decrypted.unwrap()).unwrap());
 }
