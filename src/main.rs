@@ -1,6 +1,8 @@
 extern crate openssl;
+extern crate rand;
 
 use openssl::symm::{encrypt, Cipher};
+use rand::Rng;
 
 fn main() {
     let a = b"hello world";
@@ -13,9 +15,14 @@ fn main() {
     println!("Cipher key len: {:?}", cipher.key_len());
     println!("Cipher IV len: {:?}", cipher.iv_len());
 
-    let iv = b"\x00\x01\x02\x03\x04\x05\x06\x07\x00\x01\x02\x03\x04\x05\x06\x07";
+    let mut iv = String::new();
+    for c in rand::thread_rng().gen_ascii_chars().take(16) {
+        iv.push(c);
+    }
 
-    let ciphertext = encrypt(cipher, key, Some(iv), a);
+    println!("used IV {:?}", iv);
+
+    let ciphertext = encrypt(cipher, key, Some(iv.as_bytes()), a);
 
     println!("{:?}", ciphertext);
 }
